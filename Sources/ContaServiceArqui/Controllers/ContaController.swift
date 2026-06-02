@@ -3,13 +3,22 @@ import Vapor
 import Fluent
 
 struct ContaController: RouteCollection {
+    
+    func listarContasCorrentes(req: Request) async throws -> [ContaCorrente] {
+        try await ContaCorrente.query(on: req.db).all()
+    }
 
-    func boot(routes: any RoutesBuilder) throws {
+    
+    func boot(routes: RoutesBuilder) throws {
         let contas = routes.grouped("contas")
-        contas.post("corrente",         use: criarContaCorrente)
-        contas.post(":id", "sacar",     use: sacar)
+
+        contas.post("corrente", use: criarContaCorrente)
+        contas.get(":id", "saldo", use: consultarSaldo)
         contas.post(":id", "depositar", use: depositar)
-        contas.get(":id", "saldo",      use: saldo)
+        contas.post(":id", "sacar", use: sacar)
+
+        // nova rota
+        contas.get("corrente", use: listarContasCorrentes)
     }
 
     // POST /contas/corrente
