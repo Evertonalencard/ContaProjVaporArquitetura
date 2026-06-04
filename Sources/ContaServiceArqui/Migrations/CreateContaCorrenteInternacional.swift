@@ -9,19 +9,19 @@
 import Fluent
 
 struct CreateContaCorrenteInternacional: AsyncMigration {
-
+    
     func prepare(on database: any Database) async throws {
         try await database.schema("contas_correntes_internacionais")
             .id()
-            .field("nome",             .string, .required)
-            .field("saldo",            .string, .required)
-            .field("salario_atual",    .string, .required)
-            .field("salario_anterior", .string, .required)
-            .field("taxa_iof",         .string, .required)
-            .field("cambio_dolar",     .string, .required)
+            .field("nome", .string, .required)
+            .field("saldo", .double, .required)
+            .field("salario_atual", .double, .required)
+            .field("salario_anterior", .double, .required)
+            .field("taxa_iof",         .double, .required)
+            .field("cambio_dolar",     .double, .required)
             .create()
     }
-
+    
     func revert(on database: any Database) async throws {
         try await database.schema("contas_correntes_internacionais").delete()
     }

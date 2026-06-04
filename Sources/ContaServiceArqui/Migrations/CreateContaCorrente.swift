@@ -12,10 +12,9 @@ struct CreateContaCorrente: AsyncMigration {
     func prepare(on database: any Database) async throws {
         try await database.schema("contas_correntes")
             .id()
-            .field("nome",             .string,  .required)
-            .field("saldo",            .string,  .required) // Decimal vira string no Fluent
-            .field("salario_atual",    .string,  .required)
+            .field("nome", .string, .required)
             .field("saldo", .double, .required)
+            .field("salario_atual", .double, .required)
             .create()
     }
 

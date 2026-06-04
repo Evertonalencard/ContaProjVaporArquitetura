@@ -13,7 +13,7 @@ struct CreateContaPoupanca: AsyncMigration {
         try await database.schema("contas_poupancas")
             .id()
             .field("nome",  .string, .required)
-            .field("saldo", .string, .required)
+            .field("saldo", .double, .required)
             .create()
     }
 
