@@ -18,7 +18,7 @@ final class ContaCorrenteInternacional: Model, Content, ProtocoloContaCorrenteIn
     @Field(key: "saldo")       var saldo: Decimal
     @Field(key: "salario_atual")    var salarioAtual: Decimal
     @Field(key: "salario_anterior") var salarioAnterior: Decimal
-    @Field(key: "Taxa_iof") var taxaIOF: Decimal
+    @Field(key: "taxa_iof") var taxaIOF: Decimal
     @Field(key: "cambio_dolar") var cambioDolar: Decimal
 
     var negativado: Bool { saldo < 0 }

@@ -15,7 +15,7 @@ struct CreateContaCorrente: AsyncMigration {
             .field("nome",             .string,  .required)
             .field("saldo",            .string,  .required) // Decimal vira string no Fluent
             .field("salario_atual",    .string,  .required)
-            .field("salario_anterior", .string,  .required)
+            .field("saldo", .double, .required)
             .create()
     }
 

@@ -1,25 +1,23 @@
-// Sources/ContaServiceArqui/configure.swift
 import Vapor
 import Fluent
-import FluentMySQLDriver
+import FluentPostgresDriver
 
 public func configure(_ app: Application) async throws {
 
     if let databaseURL = Environment.get("DATABASE_URL") {
-        // ✅ nova API para URL
-        try app.databases.use(.mysql(url: databaseURL), as: .mysql)
+        try app.databases.use(.postgres(url: databaseURL), as: .psql)
     } else {
-        // ✅ nova API para conexão manual
+        let config = SQLPostgresConfiguration(
+            hostname: "localhost",
+            port: SQLPostgresConfiguration.ianaPortNumber,
+            username: "vapor",
+            password: "ContaService123",
+            database: "conta_service",
+            tls: .disable
+        )
         app.databases.use(
-            DatabaseConfigurationFactory.mysql(configuration: .init(
-                hostname: "localhost",
-                port:     3307,
-                username: "Everton",
-                password: "ContaService123",
-                database: "conta_service",
-                tlsConfiguration: .none  // só para dev local
-            )),
-            as: .mysql
+            .postgres(configuration: config),
+            as: .psql
         )
     }
 

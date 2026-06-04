@@ -10,11 +10,12 @@ struct ContaController: RouteCollection {
 
         contas.get(use: listarTodas)
         contas.get("corrente", use: listarContasCorrentes)
-
-        contas.post("corrente", use: criarContaCorrente)
         contas.get(":id", "saldo", use: saldo)
         contas.post(":id", "depositar", use: depositar)
         contas.post(":id", "sacar", use: sacar)
+        contas.post("corrente", use: criarContaCorrente)
+        contas.post("poupanca", use: criarContaPoupanca)
+        contas.post("internacional", use: criarContaInternacional)
     }
 
     func listarTodas(req: Request) async throws -> [ContaResponseDTO] {
@@ -70,6 +71,32 @@ struct ContaController: RouteCollection {
         let conta = ContaCorrente(nome: dto.nome)
         try await conta.save(on: req.db)
         return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.saldo, erro: nil)
+    }
+    
+    func criarContaPoupanca(req: Request) async throws -> ResultadoDTO {
+        let dto = try req.content.decode(CriarContaDTO.self)
+        let conta = ContaPoupanca(nome: dto.nome)
+        try await conta.save(on: req.db)
+
+        return ResultadoDTO(
+            sucesso: true,
+            id: conta.id,
+            novoValor: conta.saldo,
+            erro: nil
+        )
+    }
+
+    func criarContaInternacional(req: Request) async throws -> ResultadoDTO {
+        let dto = try req.content.decode(CriarContaDTO.self)
+        let conta = ContaCorrenteInternacional(nome: dto.nome)
+        try await conta.save(on: req.db)
+
+        return ResultadoDTO(
+            sucesso: true,
+            id: conta.id,
+            novoValor: conta.saldo,
+            erro: nil
+        )
     }
 
     func saldo(req: Request) async throws -> ResultadoDTO {

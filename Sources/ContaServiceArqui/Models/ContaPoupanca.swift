@@ -10,7 +10,7 @@ import Fluent
 import Vapor
 
 final class ContaPoupanca: Model, Content, ProtocoloConta, @unchecked Sendable {
-    static let schema = "contas_Poupancas"
+    static let schema = "contas_poupancas"
 
     // MARK: - Propriedades Fluent (substituem as private(set) anteriores)
     @ID(key: .id)              var id: UUID?
