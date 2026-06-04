@@ -3,6 +3,11 @@ import Fluent
 import FluentPostgresDriver
 
 public func configure(_ app: Application) async throws {
+    
+    app.migrations.add(CreateContaCorrente())
+    app.migrations.add(CreateContaCorrenteInternacional())
+    app.migrations.add(CreateContaPoupanca())
+    try await app.autoMigrate()
 
     if let databaseURL = Environment.get("DATABASE_URL") {
         try app.databases.use(.postgres(url: databaseURL), as: .psql)
@@ -21,9 +26,6 @@ public func configure(_ app: Application) async throws {
         )
     }
 
-    app.migrations.add(CreateContaCorrente())
-    app.migrations.add(CreateContaCorrenteInternacional())
-    app.migrations.add(CreateContaPoupanca())
-    try await app.autoMigrate()
+    
     try routes(app)
 }
