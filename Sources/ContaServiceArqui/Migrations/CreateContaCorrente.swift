@@ -8,13 +8,13 @@
 import Fluent
 
 struct CreateContaCorrente: AsyncMigration {
-
     func prepare(on database: any Database) async throws {
         try await database.schema("contas_correntes")
             .id()
             .field("nome", .string, .required)
             .field("saldo", .double, .required)
             .field("salario_atual", .double, .required)
+            .field("salario_anterior", .double, .required)
             .create()
     }
 
