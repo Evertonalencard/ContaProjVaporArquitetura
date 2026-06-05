@@ -9,8 +9,8 @@
 import Foundation
 
 protocol ProtocoloContaCorrente: ProtocoloConta{
-    var salarioAtual: Decimal {get }
-    var salarioAnterior: Decimal {get }
-    func registraNovoSalario(valor: Decimal) -> Resultado
+    var salarioAtual: Double {get }
+    var salarioAnterior: Double {get }
+    func registraNovoSalario(valor: Double) -> Resultado
 }
 

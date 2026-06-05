@@ -15,11 +15,11 @@ final class ContaCorrenteInternacional: Model, Content, ProtocoloContaCorrenteIn
     // MARK: - Propriedades Fluent (substituem as private(set) anteriores)
     @ID(key: .id)              var id: UUID?
     @Field(key: "nome")        var nome: String
-    @Field(key: "saldo")       var saldo: Decimal
-    @Field(key: "salario_atual")    var salarioAtual: Decimal
-    @Field(key: "salario_anterior") var salarioAnterior: Decimal
-    @Field(key: "taxa_iof") var taxaIOF: Decimal
-    @Field(key: "cambio_dolar") var cambioDolar: Decimal
+    @Field(key: "saldo") var saldo: Double
+    @Field(key: "salario_atual") var salarioAtual: Double
+    @Field(key: "salario_anterior") var salarioAnterior: Double
+    @Field(key: "taxa_iof") var taxaIOF: Double
+    @Field(key: "cambio_dolar") var cambioDolar: Double
 
     var negativado: Bool { saldo < 0 }
     
@@ -36,7 +36,7 @@ final class ContaCorrenteInternacional: Model, Content, ProtocoloContaCorrenteIn
         self.taxaIOF = 0.038
     }
     
-    public func registraNovoSalario(valor: Decimal) -> Resultado {
+    public func registraNovoSalario(valor: Double) -> Resultado {
         self.salarioAnterior = self.salarioAtual
         self.salarioAtual = valor
         print("Seu novo salario é de: \(valor) USD")
@@ -47,7 +47,7 @@ final class ContaCorrenteInternacional: Model, Content, ProtocoloContaCorrenteIn
         return "Seus dados são, nome: \(nome)..."
     }
     
-    public func depositar(valor: Decimal) -> Resultado {
+    public func depositar(valor: Double) -> Resultado {
         guard valor > 0 else {
             return .falha(erro: "Valor de depósito inválido. Deve ser maior que zero.")
         }
@@ -58,7 +58,7 @@ final class ContaCorrenteInternacional: Model, Content, ProtocoloContaCorrenteIn
         return .sucesso(novoValor: saldo)
     }
     
-    public func sacar(valor: Decimal) -> Resultado {
+    public func sacar(valor: Double) -> Resultado {
         
         let valorIOF = valor * taxaIOF
         let totalDebitado = valor + valorIOF

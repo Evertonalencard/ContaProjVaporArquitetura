@@ -10,7 +10,7 @@ import Vapor
 struct ResultadoDTO: Content {
     let sucesso: Bool
     let id: UUID?
-    let novoValor: Decimal?
+    let novoValor: Double?
     let erro: String?
 
     // converte o enum interno para o DTO que vai pela rede
@@ -24,7 +24,7 @@ struct ResultadoDTO: Content {
         }
     
     // ✅ novo init direto — para usar no criarContaCorrente
-    init(sucesso: Bool, id:UUID? = nil, novoValor: Decimal?, erro: String?) {
+    init(sucesso: Bool, id:UUID? = nil, novoValor: Double?, erro: String?) {
         self.sucesso = sucesso
         self.id = id
         self.novoValor = novoValor

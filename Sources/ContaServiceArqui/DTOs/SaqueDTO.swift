@@ -8,5 +8,5 @@
 import Vapor
 
 struct SaqueDTO: Content {
-    let valor: Decimal
+    let valor: Double
 }

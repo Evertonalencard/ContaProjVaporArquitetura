@@ -16,6 +16,6 @@ enum TipoContaDTO: String, Content {
 struct ContaResponseDTO: Content {
     let id: UUID
     let nome: String
-    let saldo: Decimal
+    let saldo: Double
     let tipo: String
 }

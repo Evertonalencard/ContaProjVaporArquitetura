@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ProtocoloContaCorrenteInternacional:ProtocoloContaCorrente {
-    var taxaIOF:Decimal {get}
-    var cambioDolar:Decimal {get}
+    var taxaIOF:Double {get}
+    var cambioDolar:Double {get}
     
 }

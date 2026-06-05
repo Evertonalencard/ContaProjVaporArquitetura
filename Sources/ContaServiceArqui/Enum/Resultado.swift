@@ -6,6 +6,6 @@
 //
 import Foundation
 enum Resultado {
-    case sucesso(novoValor: Decimal)
+    case sucesso(novoValor: Double)
     case falha(erro: String)
 }

@@ -15,7 +15,7 @@ final class ContaPoupanca: Model, Content, ProtocoloConta, @unchecked Sendable {
     // MARK: - Propriedades Fluent (substituem as private(set) anteriores)
     @ID(key: .id)              var id: UUID?
     @Field(key: "nome")        var nome: String
-    @Field(key: "saldo")       var saldo: Decimal
+    @Field(key: "saldo")       var saldo: Double
 
     var negativado: Bool { saldo < 0 }
     
@@ -28,7 +28,7 @@ final class ContaPoupanca: Model, Content, ProtocoloConta, @unchecked Sendable {
         self.saldo = 0.0
     }
     
-    public func depositar(valor: Decimal) -> Resultado {
+    public func depositar(valor: Double) -> Resultado {
         guard valor > 0 else {
             return .falha(erro: "Valor de depósito inválido. Deve ser maior que zero.")
         }
@@ -38,7 +38,7 @@ final class ContaPoupanca: Model, Content, ProtocoloConta, @unchecked Sendable {
         return .sucesso(novoValor: saldo)
     }
     
-    public func sacar(valor: Decimal) -> Resultado {
+    public func sacar(valor: Double) -> Resultado {
         saldo -= valor
         print("Saque de R$ \(valor) realizado. Novo saldo: R$ \(saldo)")
         return .sucesso(novoValor: saldo)

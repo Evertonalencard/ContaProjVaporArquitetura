@@ -10,10 +10,10 @@ import Foundation
 
 protocol ProtocoloConta {
     var nome: String {get }
-    var saldo : Decimal {get }
+    var saldo : Double {get }
     var negativado : Bool {get }
-    func depositar(valor: Decimal)->Resultado
-    func sacar(valor: Decimal)->Resultado
+    func depositar(valor: Double)->Resultado
+    func sacar(valor: Double)->Resultado
     func verificarDadosCadastrais() ->String
     func saldoAtual() -> Resultado
 }

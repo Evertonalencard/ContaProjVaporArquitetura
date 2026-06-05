@@ -8,5 +8,5 @@
 import Vapor
 
 struct DepositoDTO: Content {
-    let valor: Decimal
+    let valor: Double
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 struct SaqueRequest {
-    let valor: Decimal
+    let valor: Double
     let conta: any ProtocoloConta
 }
