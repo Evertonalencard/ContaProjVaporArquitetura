@@ -11,47 +11,45 @@ struct ContaController: RouteCollection {
         contas.get(use: listarTodas)
         contas.get("corrente", use: listarContasCorrentes)
         contas.get(":id", "saldo", use: saldo)
+        contas.get("poupanca", use: listarContasPoupanca)
+        contas.get("internacional", use: listarContasInternacionais)
         contas.post(":id", "depositar", use: depositar)
         contas.post(":id", "sacar", use: sacar)
         contas.post("corrente", use: criarContaCorrente)
         contas.post("poupanca", use: criarContaPoupanca)
         contas.post("internacional", use: criarContaInternacional)
+        
     }
-
+    
     func listarTodas(req: Request) async throws -> [ContaResponseDTO] {
-        async let correntes = ContaCorrente.query(on: req.db).all()
-        async let poupancas = ContaPoupanca.query(on: req.db).all()
-        async let internacionais = ContaCorrenteInternacional.query(on: req.db).all()
+        do {
+            let correntes = try await ContaCorrente.query(on: req.db).all()
+            req.logger.info("Correntes carregadas: \(correntes.count)")
 
-        let contasCorrentes = try await correntes.map {
-            ContaResponseDTO(
-                id: try $0.requireID(),
-                nome: $0.nome,
-                saldo: $0.saldo,
-                tipo: "corrente"
-            )
+            let poupancas = try await ContaPoupanca.query(on: req.db).all()
+            req.logger.info("Poupancas carregadas: \(poupancas.count)")
+
+            let internacionais = try await ContaCorrenteInternacional.query(on: req.db).all()
+            req.logger.info("Internacionais carregadas: \(internacionais.count)")
+
+            let contasCorrentes = try correntes.map {
+                ContaResponseDTO(id: try $0.requireID(), nome: $0.nome, saldo: $0.saldo, tipo: "corrente")
+            }
+
+            let contasPoupancas = try poupancas.map {
+                ContaResponseDTO(id: try $0.requireID(), nome: $0.nome, saldo: $0.saldo, tipo: "poupanca")
+            }
+
+            let contasInternacionais = try internacionais.map {
+                ContaResponseDTO(id: try $0.requireID(), nome: $0.nome, saldo: $0.saldo, tipo: "internacional")
+            }
+
+            return (contasCorrentes + contasPoupancas + contasInternacionais)
+                .sorted { $0.nome.localizedCaseInsensitiveCompare($1.nome) == .orderedAscending }
+        } catch {
+            req.logger.report(error: error)
+            throw error
         }
-
-        let contasPoupancas = try await poupancas.map {
-            ContaResponseDTO(
-                id: try $0.requireID(),
-                nome: $0.nome,
-                saldo: $0.saldo,
-                tipo: "poupanca"
-            )
-        }
-
-        let contasInternacionais = try await internacionais.map {
-            ContaResponseDTO(
-                id: try $0.requireID(),
-                nome: $0.nome,
-                saldo: $0.saldo,
-                tipo: "internacional"
-            )
-        }
-
-        return (contasCorrentes + contasPoupancas + contasInternacionais)
-            .sorted { $0.nome.localizedCaseInsensitiveCompare($1.nome) == .orderedAscending }
     }
 
     func listarContasCorrentes(req: Request) async throws -> [ContaResponseDTO] {
@@ -63,6 +61,20 @@ struct ContaController: RouteCollection {
                 saldo: $0.saldo,
                 tipo: "corrente"
             )
+        }
+    }
+    
+    func listarContasPoupanca(req: Request) async throws -> [ContaResponseDTO] {
+        let contas = try await ContaPoupanca.query(on: req.db).all()
+        return try contas.map {
+            ContaResponseDTO(id: try $0.requireID(), nome: $0.nome, saldo: $0.saldo, tipo: "poupanca")
+        }
+    }
+    
+    func listarContasInternacionais(req: Request) async throws -> [ContaResponseDTO] {
+        let contas = try await ContaCorrenteInternacional.query(on: req.db).all()
+        return try contas.map {
+            ContaResponseDTO(id: try $0.requireID(), nome: $0.nome, saldo: $0.saldo, tipo: "internacional")
         }
     }
 
