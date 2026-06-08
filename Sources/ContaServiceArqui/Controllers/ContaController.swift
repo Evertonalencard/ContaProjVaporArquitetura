@@ -9,6 +9,7 @@ struct ContaController: RouteCollection {
         let contas = routes.grouped("contas")
 
         contas.get(use: listarTodas)
+        contas.get(":id", "salario", use: salario)
         contas.get("corrente", use: listarContasCorrentes)
         contas.get(":id", "saldo", use: saldo)
         contas.get("poupanca", use: listarContasPoupanca)
@@ -128,6 +129,21 @@ struct ContaController: RouteCollection {
 
         throw Abort(.notFound, reason: "Conta não encontrada.")
     }
+    
+    func salario(req: Request) async throws -> ResultadoDTO {
+        let id = try req.parameters.require("id", as: UUID.self)
+
+        if let conta = try await ContaCorrente.find(id, on: req.db) {
+            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
+        }
+
+        if let conta = try await ContaCorrenteInternacional.find(id, on: req.db) {
+            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
+        }
+
+        // Poupança não tem salário — retorna erro claro
+        throw Abort(.badRequest, reason: "Conta poupança não possui salário cadastrado.")
+    }
 
     func depositar(req: Request) async throws -> ResultadoDTO {
         let id = try req.parameters.require("id", as: UUID.self)
@@ -153,6 +169,7 @@ struct ContaController: RouteCollection {
 
         throw Abort(.notFound, reason: "Conta não encontrada.")
     }
+    
 
     func sacar(req: Request) async throws -> ResultadoDTO {
         let id = try req.parameters.require("id", as: UUID.self)
