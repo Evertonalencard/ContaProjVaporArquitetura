@@ -9,17 +9,20 @@ struct ContaController: RouteCollection {
         let contas = routes.grouped("contas")
 
         contas.get(use: listarTodas)
-        contas.get(":id", "salario", use: salario)
         contas.get("corrente", use: listarContasCorrentes)
-        contas.get(":id", "saldo", use: saldo)
         contas.get("poupanca", use: listarContasPoupanca)
         contas.get("internacional", use: listarContasInternacionais)
-        contas.post(":id", "depositar", use: depositar)
-        contas.post(":id", "sacar", use: sacar)
+
+        contas.get(":id", "saldo", use: saldo)
+        contas.get(":id", "salario", use: consultarSalario)
+
         contas.post("corrente", use: criarContaCorrente)
         contas.post("poupanca", use: criarContaPoupanca)
         contas.post("internacional", use: criarContaInternacional)
-        
+
+        contas.post(":id", "depositar", use: depositar)
+        contas.post(":id", "sacar", use: sacar)
+        contas.post(":id", "salario", use: registrarSalario)
     }
     
     func listarTodas(req: Request) async throws -> [ContaResponseDTO] {
@@ -130,21 +133,6 @@ struct ContaController: RouteCollection {
         throw Abort(.notFound, reason: "Conta não encontrada.")
     }
     
-    func salario(req: Request) async throws -> ResultadoDTO {
-        let id = try req.parameters.require("id", as: UUID.self)
-
-        if let conta = try await ContaCorrente.find(id, on: req.db) {
-            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
-        }
-
-        if let conta = try await ContaCorrenteInternacional.find(id, on: req.db) {
-            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
-        }
-
-        // Poupança não tem salário — retorna erro claro
-        throw Abort(.badRequest, reason: "Conta poupança não possui salário cadastrado.")
-    }
-
     func depositar(req: Request) async throws -> ResultadoDTO {
         let id = try req.parameters.require("id", as: UUID.self)
         let dto = try req.content.decode(DepositoDTO.self)
@@ -210,6 +198,47 @@ struct ContaController: RouteCollection {
 
         throw Abort(.notFound, reason: "Conta não encontrada.")
     }
+    
+// MARK: - salario
+    
+    func consultarSalario(req: Request) async throws -> ResultadoDTO {
+        let id = try req.parameters.require("id", as: UUID.self)
+
+        if let conta = try await ContaCorrente.find(id, on: req.db) {
+            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
+        }
+
+        if let conta = try await ContaCorrenteInternacional.find(id, on: req.db) {
+            return ResultadoDTO(sucesso: true, id: conta.id, novoValor: conta.salarioAtual, erro: nil)
+        }
+
+        throw Abort(.badRequest, reason: "Conta não possui salário cadastrável.")
+    }
+
+    func registrarSalario(req: Request) async throws -> ResultadoDTO {
+        let id = try req.parameters.require("id", as: UUID.self)
+        let dto = try req.content.decode(SalarioDTO.self)
+
+        if let conta = try await ContaCorrente.find(id, on: req.db) {
+            let resultado = conta.registraNovoSalario(valor: dto.valor)
+            if case .sucesso = resultado {
+                try await conta.save(on: req.db)
+            }
+            return ResultadoDTO(from: resultado)
+        }
+
+        if let conta = try await ContaCorrenteInternacional.find(id, on: req.db) {
+            let resultado = conta.registraNovoSalario(valor: dto.valor)
+            if case .sucesso = resultado {
+                try await conta.save(on: req.db)
+            }
+            return ResultadoDTO(from: resultado)
+        }
+
+        throw Abort(.badRequest, reason: "Conta não possui salário cadastrável.")
+    }
+
+    
 }
 
 struct CriarContaDTO: Content {
