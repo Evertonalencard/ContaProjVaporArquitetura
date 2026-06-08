@@ -43,8 +43,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateContaCorrente())
     app.migrations.add(CreateContaCorrenteInternacional())
     app.migrations.add(CreateContaPoupanca())
-    app.migrations.add(AddSalarioToContaCorrente())
-    app.migrations.add(AddSalarioToContaCorrenteInternacional())
+
 
     try await app.autoMigrate()
     try routes(app)
